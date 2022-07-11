@@ -1,5 +1,3 @@
-from asyncore import write
-from wsgiref.validate import validator
 from django.contrib.auth import authenticate                            # Django의 기본 authenticate 함수, 우리가 설정한 DefaultAuthBackend인 TokenAuth 방식으로 유저를 인증해줌.
 from django.contrib.auth.models import User                             # User 모델
 from django.contrib.auth.password_validation import validate_password   # Django의 기본 패스워드 검증 도구
@@ -13,15 +11,17 @@ from .models import Profile
 
 class RegisterSerializer(serializers.ModelSerializer):                  # 회원가입 시리얼라이저
     email = serializers.EmailField(
+        help_text="이메일(Unique)",
         required=True,
         validators=[UniqueValidator(queryset=User.objects.all())],      # 이메일에 대한 중복 검증
     )
     password = serializers.CharField(
+        help_text="비밀번호",
         write_only=True,
         required=True,
         validators=[validate_password],                                 # 비밀번호에 대한 검증
     )
-    password2 = serializers.CharField(write_only=True, required=True)   # 비밀번호 확인을 위한 필드
+    password2 = serializers.CharField(help_text="비밀번호 재입력", write_only=True, required=True)   # 비밀번호 확인을 위한 필드
 
     class Meta:
         model = User
